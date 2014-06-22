@@ -1,0 +1,19 @@
+{% extends "layout.html.twig" %}
+{% set item = 'user_create' %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+    <form role="form" method="post" action="{{ path('user_insert') }}">
+        <div class="form-group">
+            <label for="userMessage">User id</label>
+            <input name="userId" id="userId" class="form-control" placeholder="User id" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+    </div>
+</div>
+
+{% endblock %}

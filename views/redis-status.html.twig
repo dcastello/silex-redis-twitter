@@ -1,0 +1,19 @@
+{% extends "layout.html.twig" %}
+{% set item = 'redis-status' %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Redis status</h3>
+                </div>
+                <div class="panel-body">
+                    <p>{{ status }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

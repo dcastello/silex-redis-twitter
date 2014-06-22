@@ -1,0 +1,29 @@
+{% extends "layout.html.twig" %}
+{% set item = 'users' %}
+
+{% block content %}
+
+    <div class="row">
+
+        <h3>Users list</h3>
+
+        {% for user in users %}
+            <div class="col-md-4">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <span class="glyphicon glyphicon-user"></span>
+                        <a href="{{ path('user_profile', { 'userId' : user.id }) }}">{{ user.name }}</a> registered
+                        at {{ user.signup|date('Y-m-d') }}
+                    </div>
+                    <div class="panel-footer">
+                        Tweets <span class="badge">{{ user.posts }}</span> -
+                        Following <span class="badge">{{ user.following }}</span> -
+                        Followers <span class="badge">{{ user.followers }}</span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+
+{% endblock %}

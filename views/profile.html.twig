@@ -1,0 +1,82 @@
+{% extends "layout.html.twig" %}
+{% if app.session.get('user') is null %}
+    {% set item = 'users' %}
+{% else %}
+    {% if app.session.get('user') is not null and app.session.get('user').id == user.id %}
+        {% set item = 'myprofile' %}
+    {% else %}
+        {% set item = 'users' %}
+    {% endif %}
+{% endif %}
+
+{% block content %}
+
+    <div class="row">
+
+        <div class="col-md-4">
+            <h3>User profile</h3>
+
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <span class="glyphicon glyphicon-user"></span>
+                    {{ user.name }} registered at {{ user.signup|date('Y-m-d') }}
+                </div>
+                <div class="panel-footer">
+                    Tweets <span class="badge">{{ user.posts }}</span> -
+                    Following <span class="badge">{{ user.following }}</span> -
+                    Followers <span class="badge">{{ user.followers }}</span>
+                </div>
+            </div>
+
+            {% if app.session.get('user') is not null and app.session.get('user').id != user.id %}
+                <div class="well">
+                    <ul class="nav nav-pills nav-stacked">
+                        <li>
+                            <a href="{{ path('user_follow', { 'userIdToFollow' : user.id}) }}">
+                                <span class="glyphicon glyphicon-star"></span> Follow</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('user_unfollow', { 'userIdToUnfollow' : user.id}) }}">
+                                <span class="glyphicon glyphicon-star-empty"></span> Unfollow</a>
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
+
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Following
+                </div>
+                <div class="panel-body">
+                    <ul>
+                        {% for user in following %}
+                            <li><a href="{{ path('user_profile', { 'userId' : user.id }) }}">{{ user.name }}</a></li>
+                        {% else %}
+                            <li>You are not following users</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    Followers
+                </div>
+                <div class="panel-body">
+                    <ul>
+                        {% for user in followers %}
+                            <li><a href="{{ path('user_profile', { 'userId' : user.id }) }}">{{ user.name }}</a></li>
+                        {% else %}
+                            <li>You don't have followers</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            {% include 'commons/messages.html.twig' %}
+        </div>
+    </div>
+
+{% endblock %}

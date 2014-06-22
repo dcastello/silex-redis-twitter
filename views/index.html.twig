@@ -1,0 +1,26 @@
+{% extends "layout.html.twig" %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+    <form role="form" method="post" action="{{ path('user_add_message') }}">
+        <div class="form-group">
+            <label for="userMessage">Message</label>
+            <textarea name="userMessage" id="userMessage" class="form-control" rows="3" placeholder="Enter message"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+    </div>
+</div>
+
+{% if messages is defined %}
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+    {% include 'commons/messages.html.twig' %}
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

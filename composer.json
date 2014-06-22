@@ -1,0 +1,23 @@
+{
+    "name": "DavidCastello/PractisingRedis",
+    "description": "Playing with Redis",
+    "minimum-stability": "dev",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "David Castello",
+            "email": "dcastello@gmail.com"
+        }
+    ],
+    "require": {
+        "silex/silex": "~1.2",
+        "predis/service-provider": "dev-master",
+        "twig/twig": "1.15.1",
+        "symfony/twig-bridge": "~2.5"
+    },
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        }
+    }
+}

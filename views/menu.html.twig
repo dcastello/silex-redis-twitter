@@ -1,0 +1,31 @@
+{% set itemActive = (item is defined) ? item : 'home' %}
+
+<ul class="nav nav-pills" style="margin-bottom: 15px">
+    <li {{ (itemActive == 'home') ? 'class="active"' : '' }}>
+        <a href="{{ path('home') }}">Home</a>
+    </li>
+    {% if app.session.get('user') is not null %}
+        <li {{ (itemActive == 'myprofile') ? 'class="active"' : '' }}>
+            <a href="{{ path('user_profile', { 'userId' : app.session.get('user').id }) }}">Profile</a>
+        </li>
+    {% endif %}
+    <li {{ (itemActive == 'users') ? 'class="active"' : '' }}>
+        <a href="{{ path('users') }}">Users</a>
+    </li>
+    <li {{ (itemActive == 'redis-status') ? 'class="active"' : '' }}>
+        <a href="{{ path('redis_status') }}">Redis Status</a>
+    </li>
+    <li {{ (itemActive == 'user_create') ? 'class="active"' : '' }}>
+        <a href="{{ path('user_create') }}">Create user</a>
+    </li>
+
+    {% if app.session.get('user') is null %}
+        <li {{ (itemActive == 'login') ? 'class="active"' : '' }}>
+            <a href="{{ path('login') }}">Login</a>
+        </li>
+    {% else %}
+        <li {{ (itemActive == 'login') ? 'class="active"' : '' }}>
+            <a href="{{ path('logout') }}">Logout ({{ app.session.get('user').login }})</a>
+        </li>
+    {% endif %}
+</ul>

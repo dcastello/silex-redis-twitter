@@ -1,0 +1,15 @@
+<h3>Tweet list</h3>
+
+{% for message in messages %}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            {{ message.message }}
+        </div>
+        <div class="panel-footer">
+            Posted at <strong>{{ message.postedAt|date('Y-m-d H:i') }}</strong> by
+            <strong>{{ message.user.name }}</strong>
+        </div>
+    </div>
+{% else %}
+    <div class="well">There are no tweets!</div>
+{% endfor %}
