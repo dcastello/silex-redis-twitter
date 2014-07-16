@@ -5,6 +5,7 @@
 
 namespace Repository;
 
+use Model\BoardTypes;
 use Model\Message;
 use Model\User;
 
@@ -37,9 +38,11 @@ class RedisMessageRepository implements MessageRepository
         $pipeline->hincrby("user:" . $message->getUser()->getId(), "posts", 1);
         $pipeline->execute();
 
+        // ZADD KEY SCORE MEMBER
         $this->manager->zadd(
             "profile:" . $message->getUser()->getId(),
-            array($message->getId() => $message->getPostedAt())
+            $message->getPostedAt(),
+            $message->getId()
         );
 
         return $message;
@@ -50,7 +53,7 @@ class RedisMessageRepository implements MessageRepository
      * @param string $board
      * @return array|string
      */
-    public function findBoardForUser($userId, $board = 'profile')
+    public function findBoardForUser($userId, $board = BoardTypes::BOARD_PROFILE)
     {
         $statusesAsHash = $this->manager->zrevrange("$board:$userId", 0, -1);
 
@@ -61,6 +64,51 @@ class RedisMessageRepository implements MessageRepository
         }
 
         return $board;
+    }
+
+    public function addMessageToBoardHome($userId, $messageId, $postedAt)
+    {
+        $pipeline = $this->manager->pipeline();
+
+        // ZADD KEY SCORE MEMBER
+        $key = BoardTypes::BOARD_HOME . ":$userId";
+        $pipeline->zadd($key, $postedAt, $messageId);
+
+        $pipeline->execute();
+    }
+
+    public function findById($messageId)
+    {
+        $messageHash = $this->manager->hgetall('status:' . $messageId);
+
+        if (count($messageHash) == 0) {
+            return false;
+        }
+
+        $message = $this->convertKeyToMessage($messageHash);
+
+        return $message;
+    }
+
+
+    public function findMessagesForUser($userId)
+    {
+        $result = array();
+
+        $board = BoardTypes::BOARD_PROFILE . ":$userId";
+        $statusesWithScore = $this->manager->zrevrange($board, 0, -1, array('withscores' => true));
+        foreach ($statusesWithScore as $status) {
+            $messageId = $status[0];
+            $result[] = $this->findById($messageId);
+        }
+
+        return $result;
+
+//        $pipeline = $this->manager->pipeline();
+//        foreach ($statusesWithScore as $status) {
+//            $pipeline->zadd("home:$userId", $status[1], $status[0]);
+//        }
+//        $pipeline->execute();
     }
 
     private function convertKeyToMessage($messageData)

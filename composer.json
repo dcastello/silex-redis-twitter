@@ -13,7 +13,8 @@
         "silex/silex": "~1.2",
         "predis/service-provider": "dev-master",
         "twig/twig": "1.15.1",
-        "symfony/twig-bridge": "~2.5"
+        "symfony/twig-bridge": "~2.5",
+        "pda/pheanstalk": "v3.0.0"
     },
     "autoload": {
         "psr-0": {

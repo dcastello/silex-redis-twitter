@@ -142,21 +142,13 @@ class RedisUserRepository implements UserRepository
         $pipeline->zcard("following:$userId");
         $pipeline->zcard("followers:$userIdToFollow");
 
-        // obtenemos los status/messages del usuario para su profile
-        $pipeline->zrevrange("profile:$userIdToFollow", 0, -1, array('withscores' => true));
-
         $results = $pipeline->execute();
 
         $totalFollowing = $results[2];
         $totalFollowers = $results[3];
-        $statusesWithScore = $results[4];
 
         $pipeline->hset("user:$userId", "following", $totalFollowing);
         $pipeline->hset("user:$userIdToFollow", "followers", $totalFollowers);
-
-        foreach ($statusesWithScore as $status) {
-            $pipeline->zadd("home:$userId", $status[1], $status[0]);
-        }
 
         $pipeline->execute();
     }

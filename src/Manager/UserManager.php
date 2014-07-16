@@ -5,22 +5,43 @@
 
 namespace Manager;
 
+use Repository\MessageRepository;
+use Repository\UserRepository;
 
-use Model\User;
+class UserManager
+{
 
-class UserManager {
+    /** @var \Repository\UserRepository */
+    private $userRepository;
+    /** @var \Repository\MessageRepository */
+    private $messageRepository;
 
-    /**
-     * @param $params
-     * @return User
-     */
-    public function createUser($params)
+    function __construct(UserRepository $userRepository, MessageRepository $messageRepository)
     {
-        $user = new User();
-        $user->setName($params['name']);
-        $user->setFollowers(0);
-        $user->setFollowing(0);
+        $this->userRepository = $userRepository;
+        $this->messageRepository = $messageRepository;
+    }
 
-        return $user;
+    public function publishMessageOnBoardHome($userId, $messageId, $postedAt)
+    {
+        $this->messageRepository->addMessageToBoardHome($userId, $messageId, $postedAt);
+    }
+
+    public function publishMessageToAllFollowersOnBoardHome($userId, $messageId, $postedAt)
+    {
+        $followers = $this->userRepository->findAllFollowers($userId);
+
+        foreach ($followers as $follower) {
+            $this->publishMessageOnBoardHome($follower->getId(), $messageId, $postedAt);
+        }
+    }
+
+    public function synchronizeTimelineWithUserFollowingMessages($userToId, $userFollowingId)
+    {
+        $messages = $this->messageRepository->findMessagesForUser($userFollowingId);
+        foreach ($messages as $message) {
+            $postedAt = $message->getPostedAt()->format('YmdHis');
+            $this->messageRepository->addMessageToBoardHome($userToId, $message->getId(), $postedAt);
+        }
     }
 } 

@@ -3,12 +3,16 @@
  * @author: David Castello Alfaro <dcastello at gmail.com>
  */
 
+use Event\MessageAddedEvent;
+use Event\StoreEvents;
+use Event\UserFollowEvent;
 use Model\Message;
 use Model\User;
 use Repository\MessageRepository;
 use Repository\UserRepository;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 $app->get(
     "/",
@@ -156,6 +160,7 @@ $app->get(
         $userRepository = $app['user.repository'];
         $userIdToFollow = $request->get('userIdToFollow');
 
+        $user = $userRepository->findById($request->getSession()->get('user')['id']);
         $userToFollow = $userRepository->findById($userIdToFollow);
 
         if ($userToFollow == false) {
@@ -170,6 +175,9 @@ $app->get(
             'success',
             'You are now following to ' . $userToFollow->getName() . '!'
         );
+
+        $userFollowEvent = new UserFollowEvent($user, $userToFollow);
+        $app['dispatcher']->dispatch(StoreEvents::USER_FOLLOW, $userFollowEvent);
 
         return $app->redirect($urlGenerator->generate('users'));
     }
@@ -240,6 +248,9 @@ $app->post(
 
         $request->getSession()->getFlashBag()->add('success', 'Message added!');
 
+        $messageEvent = new MessageAddedEvent($user, $message);
+        $app['dispatcher']->dispatch(StoreEvents::MESSAGE_ADDED, $messageEvent);
+
         return $app->redirect($urlGenerator->generate('home'));
     }
 )->bind('user_add_message');
@@ -295,6 +306,9 @@ $app->error(
             return;
         }
 
-        return new Response($app['twig']->render('error.html.twig'));
+        return new Response($app['twig']->render(
+            'error.html.twig',
+            array('status_code' => $e->getCode(), 'status_text' => $e->getMessage())
+        ));
     }
 );

@@ -11,5 +11,11 @@ interface MessageRepository
 {
     public function insert(Message $message);
 
+    public function findById($messageId);
+
     public function findBoardForUser($userId, $board);
+
+    public function addMessageToBoardHome($userId, $messageId, $postedAt);
+
+    public function findMessagesForUser($userId);
 }
