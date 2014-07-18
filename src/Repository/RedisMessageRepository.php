@@ -77,6 +77,17 @@ class RedisMessageRepository implements MessageRepository
         $pipeline->execute();
     }
 
+    public function removeMessageOnBoardHome($userId, $messageId)
+    {
+        $pipeline = $this->manager->pipeline();
+
+        // ZREM KEY MEMBER
+        $key = BoardTypes::BOARD_HOME . ":$userId";
+        $pipeline->zrem($key, $messageId);
+
+        $pipeline->execute();
+    }
+
     public function findById($messageId)
     {
         $messageHash = $this->manager->hgetall('status:' . $messageId);
@@ -103,12 +114,6 @@ class RedisMessageRepository implements MessageRepository
         }
 
         return $result;
-
-//        $pipeline = $this->manager->pipeline();
-//        foreach ($statusesWithScore as $status) {
-//            $pipeline->zadd("home:$userId", $status[1], $status[0]);
-//        }
-//        $pipeline->execute();
     }
 
     private function convertKeyToMessage($messageData)

@@ -36,12 +36,21 @@ class UserManager
         }
     }
 
-    public function synchronizeTimelineWithUserFollowingMessages($userToId, $userFollowingId)
+    public function synchronizeTimelineWithUserFollowingMessages($userFromId, $userFollowingId)
     {
         $messages = $this->messageRepository->findMessagesForUser($userFollowingId);
         foreach ($messages as $message) {
             $postedAt = $message->getPostedAt()->format('YmdHis');
-            $this->messageRepository->addMessageToBoardHome($userToId, $message->getId(), $postedAt);
+            $this->messageRepository->addMessageToBoardHome($userFromId, $message->getId(), $postedAt);
         }
+    }
+
+    public function synchronizeTimelineWithUnfollowingUser($userFromId, $userToUnfollowId)
+    {
+        $messages = $this->messageRepository->findMessagesForUser($userToUnfollowId);
+        foreach ($messages as $message) {
+            $this->messageRepository->removeMessageOnBoardHome($userFromId, $message->getId());
+        }
+
     }
 } 

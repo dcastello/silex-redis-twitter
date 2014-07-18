@@ -10,4 +10,5 @@ final class Tubes
     const TUBE_DEFAULT = 'default';
     const TUBE_MESSAGE_NEW = 'tube.message.new';
     const TUBE_USER_FOLLOW = 'tube.user.follow';
+    const TUBE_USER_UNFOLLOW = 'tube.user.unfollow';
 } 

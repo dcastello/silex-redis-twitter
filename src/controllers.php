@@ -6,6 +6,7 @@
 use Event\MessageAddedEvent;
 use Event\StoreEvents;
 use Event\UserFollowEvent;
+use Event\UserUnfollowEvent;
 use Model\Message;
 use Model\User;
 use Repository\MessageRepository;
@@ -194,6 +195,7 @@ $app->get(
 
         /** @var UserRepository $userRepository */
         $userRepository = $app['user.repository'];
+        $user = $userRepository->findById($request->getSession()->get('user')['id']);
         $userIdToUnfollow = $request->get('userIdToUnfollow');
 
         $userToUnfollow = $userRepository->findById($userIdToUnfollow);
@@ -210,6 +212,9 @@ $app->get(
             'success',
             'You are now not following to ' . $userToUnfollow->getName() . '!'
         );
+
+        $userUnfollowEvent = new UserUnfollowEvent($user, $userToUnfollow);
+        $app['dispatcher']->dispatch(StoreEvents::USER_UNFOLLOW, $userUnfollowEvent);
 
         return $app->redirect($urlGenerator->generate('users'));
     }

@@ -17,5 +17,7 @@ interface MessageRepository
 
     public function addMessageToBoardHome($userId, $messageId, $postedAt);
 
+    public function removeMessageOnBoardHome($userId, $messageId);
+
     public function findMessagesForUser($userId);
 }

@@ -7,6 +7,7 @@ namespace Listeners;
 
 use Event\MessageAddedEvent;
 use Event\UserFollowEvent;
+use Event\UserUnfollowEvent;
 use Notification\BeanstalkdQueue\Tubes;
 use Notification\Producer;
 
@@ -41,5 +42,14 @@ class UserListener
         $data = array('userId' => $user->getId(), 'userIdToFollow' => $userToFollow->getId());
 
         $this->queue->produce(Tubes::TUBE_USER_FOLLOW, $data);
+    }
+
+    public function onUserUnfollow(UserUnfollowEvent $event)
+    {
+        $user = $event->getUser();
+        $userToUnfollow = $event->getUserToUnfollow();
+        $data = array('userId' => $user->getId(), 'userIdToUnfollow' => $userToUnfollow->getId());
+
+        $this->queue->produce(Tubes::TUBE_USER_UNFOLLOW, $data);
     }
 } 

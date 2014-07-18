@@ -55,3 +55,4 @@ $app['user.manager'] = $app->share(
 $userListener = $app['listener.user'];
 $app['dispatcher']->addListener(StoreEvents::MESSAGE_ADDED, array($userListener, 'onMessageAdded'));
 $app['dispatcher']->addListener(StoreEvents::USER_FOLLOW, array($userListener, 'onUserFollow'));
+$app['dispatcher']->addListener(StoreEvents::USER_UNFOLLOW, array($userListener, 'onUserUnfollow'));

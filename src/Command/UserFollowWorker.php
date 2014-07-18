@@ -3,8 +3,6 @@
  * @author: David Castello Alfaro <dcastello at gmail.com>
  */
 
-//sleep(10);
-
 require_once __DIR__ . "/../../vendor/autoload.php";
 require_once __DIR__ . "/../app.php";
 require_once __DIR__ . "/../../config/prod.php";

@@ -7,14 +7,14 @@ require_once __DIR__ . "/../../vendor/autoload.php";
 require_once __DIR__ . "/../app.php";
 require_once __DIR__ . "/../../config/prod.php";
 
-use Notification\BeanstalkdQueue\Consumers\MessageConsumer;
+use Notification\BeanstalkdQueue\Consumers\UserUnfollowConsumer;
 use Notification\BeanstalkdQueue\Tubes;
 
-$messageConsumer = new MessageConsumer($app['user.manager'], $app['queue.system'], Tubes::TUBE_MESSAGE_NEW);
+$userUnfollowConsumer = new UserUnfollowConsumer($app['user.manager'], $app['queue.system'], Tubes::TUBE_USER_UNFOLLOW);
 
 while (true) {
-    $job = $messageConsumer->getNextJob();
+    $job = $userUnfollowConsumer->getNextJob();
     if (is_object($job)) {
-        $messageConsumer->process($job);
+        $userUnfollowConsumer->process($job);
     }
 }

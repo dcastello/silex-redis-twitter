@@ -172,15 +172,9 @@ class RedisUserRepository implements UserRepository
 
         $totalFollowing = $results[2];
         $totalFollowers = $results[3];
-        $statuses = $results[4];
 
         $pipeline->hset("user:$userId", "following", $totalFollowing);
         $pipeline->hset("user:$userIdToUnfollow", "followers", $totalFollowers);
-
-        foreach ($statuses as $status) {
-            // ZREM KEY MEMBER
-            $pipeline->zrem("home:$userId", $status[0]);
-        }
 
         $pipeline->execute();
     }
