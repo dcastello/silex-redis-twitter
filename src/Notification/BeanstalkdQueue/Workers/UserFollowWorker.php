@@ -3,14 +3,13 @@
  * @author: David Castello Alfaro <dcastello at gmail.com>
  */
 
-namespace Notification\BeanstalkdQueue\Consumers;
-
+namespace Notification\BeanstalkdQueue\Workers;
 
 use Manager\UserManager;
 use Notification\BeanstalkdQueue\Queue;
-use Notification\Consumer;
+use Notification\ConsumerInterface;
 
-class UserUnfollowConsumer extends Worker implements Consumer
+class UserFollowWorker extends Worker implements ConsumerInterface
 {
 
     private $userManager;
@@ -21,11 +20,10 @@ class UserUnfollowConsumer extends Worker implements Consumer
         $this->userManager = $userManager;
     }
 
-
     public function process($job)
     {
         $data = json_decode($job->getData());
-        $this->userManager->synchronizeTimelineWithUnfollowingUser($data->userId, $data->userIdToUnfollow);
+        $this->userManager->synchronizeTimelineWithUserFollowingMessages($data->userId, $data->userIdToFollow);
         $this->getQueue()->deleteJob($job);
     }
 

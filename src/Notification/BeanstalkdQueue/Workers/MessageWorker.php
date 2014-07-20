@@ -3,18 +3,17 @@
  * @author: David Castello Alfaro <dcastello at gmail.com>
  */
 
-namespace Notification\BeanstalkdQueue\Consumers;
+namespace Notification\BeanstalkdQueue\Workers;
 
 use Manager\UserManager;
 use Notification\BeanstalkdQueue\Queue;
-use Notification\Consumer;
+use Notification\ConsumerInterface;
 
-class UserFollowConsumer extends Worker implements Consumer
+class MessageWorker extends Worker implements ConsumerInterface
 {
-
     private $userManager;
 
-    function __construct(UserManager $userManager, Queue $queue, $tube)
+    public function __construct(UserManager $userManager, Queue $queue, $tube)
     {
         parent::__construct($queue, $tube);
         $this->userManager = $userManager;
@@ -23,11 +22,11 @@ class UserFollowConsumer extends Worker implements Consumer
     public function process($job)
     {
         $data = json_decode($job->getData());
-        $this->userManager->synchronizeTimelineWithUserFollowingMessages($data->userId, $data->userIdToFollow);
+        $this->userManager->publishMessageToAllFollowersOnBoardHome($data->userId, $data->messageId, $data->postedAt);
         $this->getQueue()->deleteJob($job);
     }
 
-    function getNextJob()
+    public function getNextJob()
     {
         return $this->getQueue()->getNextJob($this->getTube());
     }

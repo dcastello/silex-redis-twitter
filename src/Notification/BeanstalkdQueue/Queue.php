@@ -5,26 +5,26 @@
 
 namespace Notification\BeanstalkdQueue;
 
-use Notification\Producer;
+use Notification\QueueInterface;
 use Pheanstalk\Pheanstalk;
 
-class Queue implements Producer
+class Queue implements QueueInterface
 {
-    private $queue;
+    private $pheanstalk;
 
-    function __construct(Pheanstalk $queue)
+    function __construct(Pheanstalk $pheanstalk)
     {
-        $this->queue = $queue;
+        $this->pheanstalk = $pheanstalk;
     }
 
     public function produce($tube, $message)
     {
-        $this->queue->useTube($tube)->put(json_encode($message));
+        $this->pheanstalk->useTube($tube)->put(json_encode($message));
     }
 
     public function getNextJob($tube)
     {
-        $job = $this->queue
+        $job = $this->pheanstalk
             ->watch($tube)
             ->ignore(Tubes::TUBE_DEFAULT)
             ->reserve();
@@ -34,6 +34,6 @@ class Queue implements Producer
 
     public function deleteJob($job)
     {
-        $this->queue->delete($job);
+        $this->pheanstalk->delete($job);
     }
 }

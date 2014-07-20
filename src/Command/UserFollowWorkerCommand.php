@@ -7,10 +7,7 @@ require_once __DIR__ . "/../../vendor/autoload.php";
 require_once __DIR__ . "/../app.php";
 require_once __DIR__ . "/../../config/prod.php";
 
-use Notification\BeanstalkdQueue\Consumers\UserFollowConsumer;
-use Notification\BeanstalkdQueue\Tubes;
-
-$userFollowConsumer = new UserFollowConsumer($app['user.manager'], $app['queue.system'], Tubes::TUBE_USER_FOLLOW);
+$userFollowConsumer = $app['worker.followuser'];
 
 while (true) {
     $job = $userFollowConsumer->getNextJob();

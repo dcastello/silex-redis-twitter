@@ -3,7 +3,7 @@
  * @author: David Castello Alfaro <dcastello at gmail.com>
  */
 
-namespace Notification\BeanstalkdQueue\Consumers;
+namespace Notification\BeanstalkdQueue\Workers;
 
 use Notification\BeanstalkdQueue\Queue;
 

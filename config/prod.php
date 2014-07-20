@@ -8,6 +8,10 @@ use Listeners\UserListener;
 use Manager\UserManager;
 use Notification\BeanstalkdQueue;
 use Notification\BeanstalkdQueue\Queue;
+use Notification\BeanstalkdQueue\Tubes;
+use Notification\BeanstalkdQueue\Workers\MessageWorker;
+use Notification\BeanstalkdQueue\Workers\UserFollowWorker;
+use Notification\BeanstalkdQueue\Workers\UserUnfollowWorker;
 use Pheanstalk\Pheanstalk;
 use Repository\RedisMessageRepository;
 use Repository\RedisUserRepository;
@@ -34,7 +38,7 @@ $app['queue.pheanstalk'] = $app->share(
     }
 );
 
-$app['queue.system'] = $app->share(
+$app['queue.manager'] = $app->share(
     function () use ($app) {
         return new Queue($app['queue.pheanstalk']);
     }
@@ -42,13 +46,40 @@ $app['queue.system'] = $app->share(
 
 $app['listener.user'] = $app->share(
     function () use ($app) {
-        return new UserListener($app['queue.system']);
+        return new UserListener($app['queue.manager']);
     }
 );
 
 $app['user.manager'] = $app->share(
     function () use ($app) {
         return new UserManager($app['user.repository'], $app['message.repository']);
+    }
+);
+
+$app['worker.message'] = $app->share(
+    function () use ($app) {
+        $userManager = $app['user.manager'];
+        $queueSystem = $app['queue.manager'];
+
+        return new MessageWorker($userManager, $queueSystem, Tubes::TUBE_MESSAGE_NEW);
+    }
+);
+
+$app['worker.followuser'] = $app->share(
+    function () use ($app) {
+        $userManager = $app['user.manager'];
+        $queueSystem = $app['queue.manager'];
+
+        return new UserFollowWorker($userManager, $queueSystem, Tubes::TUBE_USER_FOLLOW);
+    }
+);
+
+$app['worker.unfollowuser'] = $app->share(
+    function () use ($app) {
+        $userManager = $app['user.manager'];
+        $queueSystem = $app['queue.manager'];
+
+        return new UserUnfollowWorker($userManager, $queueSystem, Tubes::TUBE_USER_UNFOLLOW);
     }
 );
 

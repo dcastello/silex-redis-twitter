@@ -9,14 +9,15 @@ use Event\MessageAddedEvent;
 use Event\UserFollowEvent;
 use Event\UserUnfollowEvent;
 use Notification\BeanstalkdQueue\Tubes;
-use Notification\Producer;
+use Notification\ProducerInterface;
+use Notification\QueueInterface;
 
 class UserListener
 {
 
     private $queue;
 
-    public function __construct(Producer $queue)
+    public function __construct(QueueInterface $queue)
     {
         $this->queue = $queue;
     }
@@ -31,6 +32,7 @@ class UserListener
             'postedAt' => $message->getPostedAt()
         );
 
+        /** TODO: Desacoplar Tubes. UserListener no tiene porque saber que es algo de beanstalkd */
         $this->queue->produce(Tubes::TUBE_MESSAGE_NEW, $data);
 
     }

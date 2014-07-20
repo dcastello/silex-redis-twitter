@@ -5,7 +5,7 @@
 
 namespace Notification;
 
-interface Producer
+interface ConsumerInterface
 {
-    public function produce($tube, $message);
-}
+    public function process($job);
+} 
